@@ -79,7 +79,9 @@
             if(!in_array($getChatMember["result"]["status"],["owner","administrator"])){
                 f("bot_kirim_perintah")("sendMessage",[
                     "chat_id"=>$chatid,
-                    "text"=>"Gagal: Anda harus termasuk admin channel $text",
+                    "text"=>"Gagal: Anda harus termasuk admin channel $text\nStatus Anda: "
+                    . print_r($getChatMember,true)
+                    . $getChatMember["result"]["status"] ,
                     "parse_mode"=>"HTML",
                     "disable_web_page_preview"=>true,
                     'reply_markup' => [
