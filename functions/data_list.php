@@ -4,7 +4,7 @@ function data_list($dir){
     $scandir = scandir("data/$dir");
     foreach($scandir as $file){
         if(in_array($file, ['..', '.', 'info.txt'])) continue;
-        $data_list[] = substr($file, 0, -4);
+        $data_list[] = substr($file, 0, -5);
     }
     return $data_list;
 }
