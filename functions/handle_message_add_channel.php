@@ -76,11 +76,11 @@
                 ]);
                 return true;
             }
-            if(!in_array($getChatMember["result"]["status"],["owner","administrator"])){
+            if(!in_array($getChatMember["result"]["status"],["creator","owner","administrator"])){
                 f("bot_kirim_perintah")("sendMessage",[
                     "chat_id"=>$chatid,
                     "text"=>"Gagal: Anda harus termasuk admin channel $text\nStatus Anda: "
-                    . print_r($getChatMember,true)
+                    // . print_r($getChatMember,true)
                     . $getChatMember["result"]["status"] ,
                     "parse_mode"=>"HTML",
                     "disable_web_page_preview"=>true,
@@ -101,14 +101,21 @@
                 ],
             ]);
             f("data_save")("waiting_confirmation/$userid",substr($text, 1));
+            f("bot_kirim_perintah")("sendMessage",[
+                "chat_id"=>$chatid,
+                "text"=>"OK. Silakan menunggu konfirmasi admin.",
+                "parse_mode"=>"HTML",
+                "reply_to_message_id"=>$botdata['message_id'],
+            ]);
+            return true;
         }
         elseif($chatid == f("get_config")("admin_chat_id") and f("str_is_diawali")($text,"/tolak_")){
-            $requester = substr($text,strlen("/tolak_"));
+            $requester = str_replace("@".f("get_config")("botuname"),"",substr($text,strlen("/tolak_")));
             $channel_confirmation = f("data_load")("waiting_confirmation/$requester" , false);
             if(!$channel_confirmation){
                 f("bot_kirim_perintah")("sendMessage",[
                     "chat_id"=>$chatid,
-                    "text"=>"Ini sudah tidak dapat diproses",
+                    "text"=>"Command ini sudah tidak dapat diproses",
                     "parse_mode"=>"HTML",
                     "reply_to_message_id"=>$botdata['message_id'],
                 ]);
@@ -119,6 +126,7 @@
                 "parse_mode"=>"HTML",
             ]);
             f("data_delete")("waiting_confirmation/$requester");
+            return true;
         }
         return false;
 }

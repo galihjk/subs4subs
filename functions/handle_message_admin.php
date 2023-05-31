@@ -2,9 +2,16 @@
 function handle_message_admin($botdata){
     $user = $botdata['from'];
     $userid = $user['id'];
-    $admins = f("get_config")("bot_admins");
-    $is_admin = in_array($userid,$admins);
     $text = $botdata["text"] ?? "";
+    if(
+        $botdata["chat"]["id"] == f("get_config")("admin_chat_id","")
+        or in_array($userid,f("get_config")("bot_admins",[]))
+    ){
+        $is_admin = true;
+    }
+    else{
+        $is_admin = false;
+    }    
     if($is_admin and $text == "/users"){
         $datalist = f("data_list")("users");
         $send_text = "USERS:\n";
