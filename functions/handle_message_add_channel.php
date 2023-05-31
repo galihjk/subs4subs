@@ -90,11 +90,12 @@
                 ]);
                 return true;
             }
-            $channelpost = f("bot_kirim_perintah")("sendMessage",[
+            f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>f("get_config")("admin_chat_id"),
-                "text"=>"/u_$userid ingin menambahkan channel $text\n"
-                    ."/setuju_$userid\n"
-                    ."/tolak_$userid\n",
+                "text"=>$botdata['from']['first_name']." ingin menambahkan channel\n$text\n\n"
+                    ."✅ /setuju_$userid\n\n"
+                    ."❌ /tolak_$userid\n\n"
+                    ."/u_$userid - info user",
                 "parse_mode"=>"HTML",
                 'reply_markup' => [
                     'force_reply'=>false,
@@ -119,6 +120,7 @@
                     "parse_mode"=>"HTML",
                     "reply_to_message_id"=>$botdata['message_id'],
                 ]);
+                return true;
             }
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$requester,
@@ -126,6 +128,46 @@
                 "parse_mode"=>"HTML",
             ]);
             f("data_delete")("waiting_confirmation/$requester");
+            return true;
+        }
+        elseif($chatid == f("get_config")("admin_chat_id") and f("str_is_diawali")($text,"/setuju_")){
+            $requester = str_replace("@".f("get_config")("botuname"),"",substr($text,strlen("/setuju_")));
+            $channel_confirmation = f("data_load")("waiting_confirmation/$requester" , false);
+            if(!$channel_confirmation){
+                f("bot_kirim_perintah")("sendMessage",[
+                    "chat_id"=>$chatid,
+                    "text"=>"Command ini sudah tidak dapat diproses",
+                    "parse_mode"=>"HTML",
+                    "reply_to_message_id"=>$botdata['message_id'],
+                ]);
+                return true;
+            }
+            f("data_delete")("waiting_confirmation/$requester");
+            $result = f("bot_kirim_perintah")("sendMessage",[
+                "chat_id"=>f("get_config")("s4s_channel"),
+                "text"=>"t.me/$channel_confirmation\n"
+                    ."Ayo subscribe @$channel_confirmation dan dapatkan poinnya! \n",
+                "parse_mode"=>"HTML",
+                'reply_markup'=>f("gen_inline_keyboard")([
+                    ['Saya sudah subscribe!', "http://t.me/".f("get_config")("botuname")."?start=$channel_confirmation"],
+                ])
+            ]);
+            if(empty($result['result']['message_id'])){
+                f("bot_kirim_perintah")("sendMessage",[
+                    "chat_id"=>$chatid,
+                    "text"=>"ERROR: ".print_r($result,true),
+                    "parse_mode"=>"HTML",
+                ]);
+                return true;
+            }
+            $postmsgid = $result['result']['message_id'];
+            $linktopost = f("s4slink")($postmsgid);
+            f("set_userchannel")($requester,$channel_confirmation,$postmsgid);
+            f("bot_kirim_perintah")("sendMessage",[
+                "chat_id"=>$requester,
+                "text"=>"Channel anda berhasil ditambahkan! <a href='$linktopost'>[lihat]</a>",
+                "parse_mode"=>"HTML",
+            ]);
             return true;
         }
         return false;
