@@ -128,6 +128,12 @@
                 "parse_mode"=>"HTML",
             ]);
             f("data_delete")("waiting_confirmation/$requester");
+            f("bot_kirim_perintah")("sendMessage",[
+                "chat_id"=>$chatid,
+                "text"=>"👍",
+                "parse_mode"=>"HTML",
+                "reply_to_message_id"=>$botdata['message_id'],
+            ]);
             return true;
         }
         elseif($chatid == f("get_config")("admin_chat_id") and f("str_is_diawali")($text,"/setuju_")){
@@ -145,11 +151,10 @@
             f("data_delete")("waiting_confirmation/$requester");
             $result = f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>f("get_config")("s4s_channel"),
-                "text"=>"t.me/$channel_confirmation\n"
-                    ."Ayo subscribe @$channel_confirmation dan dapatkan poinnya! \n",
+                "text"=>"<a href='t.me/$channel_confirmation'>Ayo subscribe dan dapatkan poinnya!</a>",
                 "parse_mode"=>"HTML",
                 'reply_markup'=>f("gen_inline_keyboard")([
-                    ['Saya sudah subscribe!', "http://t.me/".f("get_config")("botuname")."?start=$channel_confirmation"],
+                    ["✅ Sudah join @$channel_confirmation", "http://t.me/".f("get_config")("botuname")."?start=$channel_confirmation"],
                 ])
             ]);
             if(empty($result['result']['message_id'])){
@@ -167,6 +172,18 @@
                 "chat_id"=>$requester,
                 "text"=>"Channel anda berhasil ditambahkan! <a href='$linktopost'>[lihat]</a>",
                 "parse_mode"=>"HTML",
+            ]);
+            $chatinfo = f("bot_kirim_perintah")("getChat",[
+                "chat_id"=>$channel_confirmation,
+            ]);
+            if(!empty($chatinfo['result'])){
+                f("data_save")("channels/$channel_confirmation",$chatinfo['result']);
+            }
+            f("bot_kirim_perintah")("sendMessage",[
+                "chat_id"=>$chatid,
+                "text"=>"👍",
+                "parse_mode"=>"HTML",
+                "reply_to_message_id"=>$botdata['message_id'],
             ]);
             return true;
         }
