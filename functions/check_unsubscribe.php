@@ -8,7 +8,7 @@ function check_unsubscribe($botdata){
     $unsubscribe = false;
     foreach($usersubs as $k=>$channel){
         $getChatMember = f("bot_kirim_perintah")("getChatMember",[
-            'chat_id'=>$channel,
+            'chat_id'=>"@$channel",
             'user_id'=>$userid,
         ]);
         if(empty($getChatMember["result"]["status"])
@@ -16,7 +16,7 @@ function check_unsubscribe($botdata){
         ){
             f("bot_kirim_perintah")("sendMessage",[
                 'chat_id'=>$userid,
-                'text'=>"Anda telah unsubscribe $channel, SBP -1",
+                'text'=>"Anda telah unsubscribe @$channel, SBP -1",
             ]);
             $unsubscribe = true;
             unset($newusersubs[$k]);
