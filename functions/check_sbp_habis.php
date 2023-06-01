@@ -6,7 +6,7 @@ function check_sbp_habis($userid){
         $userchannels = f("get_userchannels")($userid);
         foreach($userchannels as $channel){
             $output_text .= "- $channel\n";
-            $msgid = f("data_load")("$userid-$channel");
+            $msgid = f("data_load")("channelposts/$userid-$channel");
             $deleteMsg = f("bot_kirim_perintah")('deleteMessage',[
                 'chat_id' => f("get_config")("s4s_channel"),
                 'message_id' => $msgid,
