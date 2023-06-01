@@ -90,7 +90,7 @@
                 ]);
                 return true;
             }
-            f("bot_kirim_perintah")("sendMessage",[
+            $adm_msg = f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>f("get_config")("admin_chat_id"),
                 "text"=>$botdata['from']['first_name']." ingin menambahkan channel\n$text\n\n"
                     ."✅ /setuju_$userid\n\n"
@@ -101,6 +101,13 @@
                     'force_reply'=>false,
                 ],
             ]);
+            if(empty($adm_msg['ok'])){
+                f("bot_kirim_perintah")("sendMessage",[
+                    "chat_id"=>$chatid,
+                    "text"=>print_r($adm_msg,true),
+                ]);
+                return true;
+            }
             f("data_save")("waiting_confirmation/$userid",substr($text, 1));
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$chatid,
