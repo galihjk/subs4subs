@@ -12,6 +12,7 @@
             $output_text .= "<a href='".f("s4slink")($msgid)."'>[↗️]</a>\n";
             $output_text .= "/hapus_channel_$channel\n\n";
         }
+        $output_text .= "/add_channel - tambah channel";
         f("bot_kirim_perintah")("sendMessage",[
             "chat_id"=>$chatid,
             "text"=>$output_text,

@@ -130,7 +130,7 @@
             f("data_delete")("waiting_confirmation/$requester");
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$chatid,
-                "text"=>"👍",
+                "text"=>"🤐",
                 "parse_mode"=>"HTML",
                 "reply_to_message_id"=>$botdata['message_id'],
             ]);
@@ -151,7 +151,7 @@
             f("data_delete")("waiting_confirmation/$requester");
             $result = f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>f("get_config")("s4s_channel"),
-                "text"=>"<a href='t.me/$channel_confirmation'>Ayo subscribe dan dapatkan poinnya!</a>",
+                "text"=>"Ayo <a href='t.me/$channel_confirmation'>join ke sini</a> dan dapatkan poinnya!",
                 "parse_mode"=>"HTML",
                 'reply_markup'=>f("gen_inline_keyboard")([
                     ["✅ Sudah join @$channel_confirmation", "http://t.me/".f("get_config")("botuname")."?start=$requester-$channel_confirmation"],
@@ -181,8 +181,9 @@
             }
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$chatid,
-                "text"=>"👍",
+                "text"=>"<a href='$linktopost'>👍</a>",
                 "parse_mode"=>"HTML",
+                "disable_web_page_preview"=>true,
                 "reply_to_message_id"=>$botdata['message_id'],
             ]);
             return true;
