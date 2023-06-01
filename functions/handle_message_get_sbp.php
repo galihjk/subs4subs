@@ -110,7 +110,7 @@
             'subs' => $subscibed_channel,
         ]);
         f("bot_kirim_perintah")("sendMessage",[
-            "chat_id"=>$ch_owner,
+            "chat_id"=>$userid,
             "text"=>"Anda mendapatkan 1 SBP dari @$channel.\n"
                 ."SBP Anda: $user_sbp",
             "parse_mode"=>"HTML",
