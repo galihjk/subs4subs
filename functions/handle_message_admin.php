@@ -25,16 +25,13 @@ function handle_message_admin($botdata){
         return true;
     }
     elseif($is_admin and f("str_is_diawali")($text,"/u_")){
+        $finduserid = str_replace("@".f("get_config")("botuname"),"",substr($text,strlen("/u_")));
+        $userdata = f("data_load")("users/$finduserid");
+        $usersubsdata = f("data_load")("usersubs/$finduserid");
+        $userdata = array_merge($userdata,$usersubsdata);
         f("bot_kirim_perintah")("sendMessage",[
             "chat_id"=>$botdata["chat"]["id"],
-            "text"=>"underconst u $text",
-        ]);
-        return true;
-    }
-    elseif($is_admin and $text == "asd"){
-        f("bot_kirim_perintah")("sendMessage",[
-            "chat_id"=>$botdata["chat"]["id"],
-            "text"=>f("s4slink")(1),
+            "text"=>print_r($userdata,true),
         ]);
         return true;
     }
