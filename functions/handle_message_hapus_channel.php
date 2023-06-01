@@ -21,6 +21,7 @@
                 "parse_mode"=>"HTML",
                 "reply_to_message_id"=>$botdata['message_id'],
             ]);
+            return true;
         }
         $userchannel = str_replace("-","_",$userchannel);
         f("bot_kirim_perintah")("sendMessage",[
@@ -35,19 +36,33 @@
         $userchannel = substr($text,strlen("/hapus_yakin_"));
         $userchannel = str_replace("_","-",$userchannel);
         $userchannelpost = f("data_load")("channelposts/$userchannel");
-        if(empty($userchannel)){
+        if(empty($userchannelpost)){
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$chatid,
                 "text"=>"Command ini sudah tidak dapat digunakan.\n/my_channels - lihat daftar channel",
                 "parse_mode"=>"HTML",
                 "reply_to_message_id"=>$botdata['message_id'],
             ]);
+            return true;
         }
+        $deleteMsg = f("bot_kirim_perintah")('deleteMessage',[
+            'chat_id' => f("get_config")("s4s_channel"),
+            'message_id' => $userchannelpost,
+        ]);
+        if(empty($deleteMsg['ok'])){
+            f("bot_kirim_perintah")('editMessageText',[
+                'chat_id' => f("get_config")("s4s_channel"),
+                'text'=> "This message has been #deleted",
+                'parse_mode'=>'HTML',
+                'message_id' => $userchannelpost,
+            ]);
+        }
+        f("data_delete")("channelposts/$userchannel");
         f("bot_kirim_perintah")("sendMessage",[
             "chat_id"=>$chatid,
-            "text"=>"Delete: ".f("s4slink")($userchannelpost),
+            "text"=>"Channel berhasil dihapus",
             "parse_mode"=>"HTML",
-            "disable_web_page_preview"=>true,
+            "reply_to_message_id"=>$botdata['message_id'],
         ]);
         return true;
     }
