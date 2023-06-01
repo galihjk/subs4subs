@@ -9,7 +9,7 @@
         foreach($userchannels as $channel){
             $output_text .= "- $channel ";
             $msgid = f("data_load")("$userid-$channel");
-            $output_text .= "<a href='t.me/".f("s4slink")($msgid)."'>[↗️]</a>\n";
+            $output_text .= "<a href='".f("s4slink")($msgid)."'>[↗️]</a>\n";
             $output_text .= "/hapus_channel_$channel\n\n";
         }
         f("bot_kirim_perintah")("sendMessage",[

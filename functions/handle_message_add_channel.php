@@ -154,7 +154,7 @@
                 "text"=>"<a href='t.me/$channel_confirmation'>Ayo subscribe dan dapatkan poinnya!</a>",
                 "parse_mode"=>"HTML",
                 'reply_markup'=>f("gen_inline_keyboard")([
-                    ["✅ Sudah join @$channel_confirmation", "http://t.me/".f("get_config")("botuname")."?start=$channel_confirmation"],
+                    ["✅ Sudah join @$channel_confirmation", "http://t.me/".f("get_config")("botuname")."?start=$requester-$channel_confirmation"],
                 ])
             ]);
             if(empty($result['result']['message_id'])){
