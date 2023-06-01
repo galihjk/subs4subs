@@ -40,13 +40,13 @@
             return true;
         }
         $getChatMember = f("bot_kirim_perintah")("getChatMember",[
-            'chat_id'=>$channel,
+            'chat_id'=>"@$channel",
             'user_id'=>$userid,
         ]);
         if(empty($getChatMember["result"]["status"])){
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$chatid,
-                "text"=>"Gagal: Bot sudah bukan admin di channel $channel",
+                "text"=>"Gagal: Bot sudah bukan admin di channel @$channel",
                 "parse_mode"=>"HTML",
                 "disable_web_page_preview"=>true,
                 'reply_markup' => [
