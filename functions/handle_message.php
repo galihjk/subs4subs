@@ -2,6 +2,7 @@
 function handle_message($botdata){
     $chat_id = $botdata["chat"]["id"];
     f("handle_botdata_functions")($botdata,[
+        "check_banned_user",
         "check_force_subs",
         "check_unsubscribe",
         "check_unauthorized_group",
