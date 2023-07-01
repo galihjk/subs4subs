@@ -17,7 +17,7 @@ if($last_job_run != $current_time){
         ];
     }
     echo "<pre>";
-    echo "current_time=$current_time - last_job_run=$last_job_run\n";
+    echo "current_time=$current_time - last_job_run=$last_job_run ==== ".($current_time-$last_job_run)."\n";
     echo "\n-----\n";
     print_r($channels);
     echo "\n-----\n";
