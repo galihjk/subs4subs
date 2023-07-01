@@ -33,6 +33,20 @@
                 ]);
                 return true;
             }
+            $ch_to_add = substr($text, 1);
+            if(file_exists("data/banned_channels/$ch_to_add")){
+                f("bot_kirim_perintah")("sendMessage",[
+                    "chat_id"=>$chatid,
+                    "text"=>"Gagal: Channel ini banned, silakan hubungi admin",
+                    "parse_mode"=>"HTML",
+                    "disable_web_page_preview"=>true,
+                    'reply_markup' => [
+                        'force_reply'=>false,
+                    ],
+                ]);
+                return true;
+            }
+            
             $sbp = f("get_usersbp")($userid);
             if($sbp < 1){
                 f("bot_kirim_perintah")("sendMessage",[
@@ -108,7 +122,7 @@
                 ]);
                 return true;
             }
-            f("data_save")("waiting_confirmation/$userid",substr($text, 1));
+            f("data_save")("waiting_confirmation/$userid",$ch_to_add);
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$chatid,
                 "text"=>"OK. Silakan menunggu konfirmasi admin.",
@@ -194,6 +208,9 @@
                 "disable_web_page_preview"=>true,
                 "reply_to_message_id"=>$botdata['message_id'],
             ]);
+            $addch_history = f("data_load")("user_addch_history/$requester",[]);
+            $addch_history[$channel_confirmation] = time();
+            f("data_save")("user_addch_history/$requester",$addch_history);
             return true;
         }
         return false;
