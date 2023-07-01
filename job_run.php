@@ -48,6 +48,7 @@ if($last_job_run != $current_time){
         }
         $cnt = $cnt['result'];
         if($channels[$item]['cnt'] != $cnt){
+            $channels_berubah[]=$item;
             echo "$item berubah dari ".$channels[$item]['cnt']." menjadi $cnt\n";
         }
         else{
