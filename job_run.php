@@ -42,6 +42,11 @@ if($last_job_run != $current_time){
         $cnt = f("bot_kirim_perintah")("getChatMemberCount",[
             'chat_id'=>"@$item",
         ]);
+        if(empty($cnt['ok'])){
+            echo "ERROR! jumlah subscriber $item tidak bisa didapatkan.\n";
+            continue;
+        }
+        $cnt = $cnt['result'];
         if($channels[$item]['cnt'] != $cnt){
             echo "$item berubah dari ".$channels[$item]['cnt']." menjadi $cnt\n";
         }
