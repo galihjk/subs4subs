@@ -1,5 +1,6 @@
 <?php
 function check_unsubscribe_user($user = "{ALL_USERS}"){
+    $current_time = time();
     $return = "";
 
     if($user === "{ALL_USERS}"){
