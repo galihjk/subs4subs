@@ -5,68 +5,19 @@ $current_time = time();
 echo "<h1>Running job [$current_time]</h1>";
 if($last_job_run != $current_time){
     f("data_save")("last_job_run",$current_time);
-    $datalist = f("data_list")("channelposts");
-    $channels = [];
-    foreach($datalist as $item){
-        $chname = explode("-",$item)[1];
-        $cnt = f("data_load")("channelsbcount/$chname",0);
-        $time = f("data_time")("channelsbcount/$chname",0);
-        $channels[$chname] = [
-            'cnt' => $cnt,
-            'time' => $time,
-        ];
-    }
+
     echo "<pre>";
     echo "current_time=$current_time - last_job_run=$last_job_run ==== ".($current_time-$last_job_run)."\n";
-    echo "\n-----\n";
-    print_r($channels);
-    echo "\n-----\n";
-    $time = time();
-    $detik_check_channelsbcount = f("get_config")("detik_check_channelsbcount");
-    echo "time=$time, detik_check_channelsbcount=$detik_check_channelsbcount\n";
-    $channels_check = [];
-    foreach($channels as $k=>$item){
-        if($time - $item['time'] > $detik_check_channelsbcount){
-            $channels_check[] = $k;
-            echo "V] $k perlu dicek jumlahnya (".$time."-".$item['time']." = ". ($time - $item['time']) ." > $detik_check_channelsbcount)\n";
-
-        }
-        else{
-            echo "X] $k tidak perlu dicek jumlahnya (".$time."-".$item['time']." = ". ($time - $item['time']) .")\n";
-        }
-    }
-    echo "\n--channels_check---\n";
-    print_r($channels_check);
-    $channels_berubah = [];
-    foreach($channels_check as $item){
-        $cnt = f("bot_kirim_perintah")("getChatMemberCount",[
-            'chat_id'=>"@$item",
-        ]);
-        if(empty($cnt['ok'])){
-            echo "ERROR! jumlah subscriber $item tidak bisa didapatkan.\n";
-            continue;
-        }
-        $cnt = $cnt['result'];
-        if($channels[$item]['cnt'] != $cnt){
-            $channels_berubah[]=$item;
-            echo "$item berubah dari ".$channels[$item]['cnt']." menjadi $cnt\n";
-        }
-        else{
-            echo "$item tidak berubah ($cnt)\n";
-        }
-        f("data_save")("channelsbcount/$item",$cnt);
-    }
     
-    echo "\n---channels_berubah--\n";
-    print_r($channels_berubah);
+
+    //get user list by date ascending
     $all_users = f("data_list")("users");
-    echo "\n---all_users--\n";
-    print_r($all_users);
+    
     $usertime = [];
     foreach($all_users as $item){
         $usertime[$item] = f("data_time")("usersubs/$item");
     }
-    arsort($usertime);
+    asort($usertime);
     echo "\n---usertime--\n";
     print_r($usertime);
     $max_check_all_user_subs = f("get_config")("max_check_all_user_subs");
@@ -80,20 +31,71 @@ if($last_job_run != $current_time){
             break;
         }
         $usersubs = f("get_usersubs")($usr);
-        if($time - $usr_t > $detik_check_subs_all_users){
+        if($current_time - $usr_t > $detik_check_subs_all_users){
             $users_check[$usr] = $usersubs;
-            echo "V] $usr perlu dicek (".$time."-".$usr_t." = ". ($time - $usr_t) ." > $detik_check_subs_all_users)\n";
+            echo "V] $usr perlu dicek (".$current_time."-".$usr_t." = ". ($current_time - $usr_t) ." > $detik_check_subs_all_users)\n";
         }
         else{
-            echo "X] $usr tidak perlu dicek (".$time."-".$usr_t." = ". ($time - $usr_t) .")\n";
+            echo "X] $usr tidak perlu dicek (".$current_time."-".$usr_t." = ". ($current_time - $usr_t) .")\n";
         }
         f("set_usersubs")($usr,$usersubs);
         $loopcount++;
     }
     echo "\n---users_check--\n";
     print_r($users_check);
+
+    $channels = [];
+    foreach($users_check as $usrchs){
+        $channels = array_unique(array_merge($channels, $usrchs));
+    }
+    echo "\n---channels--\n";
+    print_r($channels);
+
+    $channelsbcount = [];
+    foreach($channels as $item){
+        $channelsbcount[$item] = f("data_load")("channelsbcount/$item",0);
+    }
+
+    $channels_berubah = [];
+    foreach($channelsbcount as $chname=>$sbcount){
+        $cnt = f("bot_kirim_perintah")("getChatMemberCount",[
+            'chat_id'=>"@$chname",
+        ]);
+        if(empty($cnt['ok'])){
+            echo "ERROR! jumlah subscriber $chname tidak bisa didapatkan.\n";
+            continue;
+        }
+        $cnt = $cnt['result'];
+        if($sbcount != $cnt){
+            $channels_berubah[]=$chname;
+            echo "$chname berubah dari ".$channels[$item]['cnt']." menjadi $cnt\n";
+            f("data_save")("channelsbcount/$chname",$cnt);
+        }
+        else{
+            echo "$chname tidak berubah ($cnt)\n";
+        }
+    }
     
-    // $delay = $current_time - $last_job_run;
+    echo "\n---channels_berubah--\n";
+    print_r($channels_berubah);
+
+    echo "\n-----\n";
+    foreach($users_check as $usr=>$usrchs){
+        echo "$usr: ";
+        $usr_checksubs = [];
+        foreach($usrchs as $item_usrch){
+            $result = "";
+            if(in_array($item_usrch, $channels_berubah)){
+                $result = "subscribed";
+            }
+            else{
+                $result = "no check";
+            }
+            $usr_checksubs[$item_usrch] = $result;
+        }
+        print_r($usr_checksubs);
+        echo "\n";
+    }
     
 }
 else{
