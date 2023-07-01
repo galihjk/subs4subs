@@ -54,7 +54,7 @@ if($last_job_run != $current_time){
         else{
             echo "$item tidak berubah ($cnt)\n";
         }
-        f("data_save")("channelsbcount/$chname",$cnt);
+        f("data_save")("channelsbcount/$item",$cnt);
     }
     
     echo "\n---channels_berubah--\n";
