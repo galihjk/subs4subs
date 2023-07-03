@@ -58,8 +58,11 @@ function check_force_subs($botdata){
         ]);
         return true;
     }
-    
-    $botdata["from"]["LAST_ACTIVE"] = date("Y-m-d H:i:s");
-    f("data_save")("users/".$botdata["from"]["id"],$user);
+    $userdata = f("data_load")("users/$user",[]);
+    foreach($botdata["from"] as $k=>$v){
+        $userdata[$k] = $v;
+    }
+    $userdata["LAST_ACTIVE"] = date("Y-m-d H:i:s");
+    f("data_save")("users/".$userdata,$user);
     return false;
 }
