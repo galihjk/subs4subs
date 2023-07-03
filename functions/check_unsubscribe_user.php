@@ -146,7 +146,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     $return .=  "Channel $item_addchh BANNED!\n";
                     $outputtext .= "@$item_addchh\n";
                     $admin_info .= "Channel @$item_addchh di-banned.\n";
-                    $userchannelpost = f("data_load")("channelposts/$item_addchh");
+                    $userchannelpost = f("data_load")("channelposts/$usr-$item_addchh");
                     if(!empty($userchannelpost)){
                         $deleteMsg = f("bot_kirim_perintah")('deleteMessage',[
                             'chat_id' => f("get_config")("s4s_channel"),
@@ -160,7 +160,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                                 'message_id' => $userchannelpost,
                             ]);
                         }
-                        f("data_delete")("channelposts/$item_addchh");
+                        f("data_delete")("channelposts/$usr-$item_addchh");
                     }
                 }
                 f("bot_kirim_perintah")("sendMessage",[

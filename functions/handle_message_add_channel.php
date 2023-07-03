@@ -196,7 +196,7 @@
                 "parse_mode"=>"HTML",
             ]);
             $chatinfo = f("bot_kirim_perintah")("getChat",[
-                "chat_id"=>$channel_confirmation,
+                "chat_id"=>"@$channel_confirmation",
             ]);
             if(!empty($chatinfo['result'])){
                 f("data_save")("channels/$channel_confirmation",$chatinfo['result']);
