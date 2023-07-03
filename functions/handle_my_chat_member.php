@@ -6,7 +6,7 @@ function handle_my_chat_member($botdata){
     and !empty($botdata["new_chat_member"]["status"])
     and $botdata["new_chat_member"]["status"] == "kicked"
     ){
-        $userdata = f("data_load")("users/$finduserid");
+        $userdata = f("data_load")("users/".$botdata["from"]["id"]);
         $userdata['STOP_BOT'] = date("Y-m-d H:i:s");
         f("data_save")("users/".$botdata["from"]["id"],$userdata);
     }
