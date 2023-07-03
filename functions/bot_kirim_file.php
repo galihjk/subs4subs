@@ -10,7 +10,7 @@ function bot_kirim_file($chat_id, $filename, $data, $caption){
 
     // Create CURLFile
     $finfo = finfo_file(finfo_open(FILEINFO_MIME_TYPE), "temp/$filename");
-    $cFile = new CURLFile($filename, $finfo);
+    $cFile = new CURLFile("temp/$filename", $finfo);
 
     // Add CURLFile to CURL request
     curl_setopt($ch, CURLOPT_POSTFIELDS, [

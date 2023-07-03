@@ -63,7 +63,7 @@ function handle_message_admin($botdata){
             $botdata["chat"]["id"], 
             "info_data.txt", 
             print_r($userdata,true), 
-            "user+$finduserid+".date("Y-m-d-H-i")
+            "user $finduserid ".date("Y-m-d-H-i")
         );
 
         return true;
