@@ -61,7 +61,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         ]);
         if(empty($cnt['ok'])){
             $return .=  "ERROR! jumlah subscriber $chname tidak bisa didapatkan.\n";
-            $admin_info .= "Jumlah subscriber @$chname tidak bisa didapatkan oleh bot";
+            $admin_info .= "Jumlah subscriber @$chname tidak bisa didapatkan oleh bot\n";
             $channels_berubah[]=$chname;
             continue;
         }
@@ -111,7 +111,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
             $chatinfo['result']["id"] = "-0";
         }
         if($chatinfo['result']["id"] != $chid){
-            $admin_info .= "Channel @$k_ch berubah dari $chid jadi ".$chatinfo['result']["id"]."\nChannel ini dibanned!";
+            $admin_info .= "Channel @$k_ch berubah dari $chid jadi ".$chatinfo['result']["id"]."\nChannel ini dibanned!\n";
             $return .= "Channel @$k_ch berubah dari $chid jadi ".$chatinfo['result']["id"]."\nChannel ini dibanned!\n";
             file_put_contents("data/banned_channels/$k_ch", "1");
             $datalist = f("data_list")("channelposts");
