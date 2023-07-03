@@ -6,6 +6,7 @@ function handle_message($botdata){
         "check_force_subs",
         "check_unsubscribe",
         "check_unauthorized_group",
+        "handle_message_invite",
         "handle_message_msgcmd",
         "handle_message_my_channel",
         "handle_message_hapus_channel",

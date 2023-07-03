@@ -84,6 +84,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         $newusersubs = $usrchs;
         $unsubscribe = false;
         $ban = false;
+        $admin_info = "";
         foreach($usrchs as $k=>$item_usrch){
             $result = "";
             if(in_array($item_usrch, $channels_berubah)){
@@ -104,7 +105,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     else{
                         f("bot_kirim_perintah")("sendMessage",[
                             'chat_id'=>$usr,
-                            'text'=>"Anda telah unsubscribe @$usrchs, anda kena /penalty",
+                            'text'=>"Anda telah unsubscribe @$usrchs, Anda dan channel Anda di-banned.",
                         ]);
                         $ban = true;
                         $result = "UNSUBSCRIBE!!";
@@ -112,6 +113,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     $unsubscribe = true;
                     unset($newusersubs[$k]);
                     $usersbp--;
+                    $admin_info .= "/u_$usr unsubscribe @$usrchs\n";
                 }
                 else{
                     $result = "subscribed";
@@ -124,6 +126,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         }
         $return .= print_r($usr_checksubs, true);
         $return .=  "\n";
+        
         if($unsubscribe){
             f("set_usersb")($usr,[
                 'SBP' => $usersbp,
@@ -131,6 +134,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
             ]);
         }
         if($ban){
+            $admin_info .= "/u_$usr di-banned.\n";
             file_put_contents("data/banned_users/$usr", "1");
             $return .=  "User $usr BANNED!\n";
             $addch_history = f("data_load")("user_addch_history/$usr",[]);
@@ -141,6 +145,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     file_put_contents("data/banned_channels/$item_addchh", "1");
                     $return .=  "Channel $item_addchh BANNED!\n";
                     $outputtext .= "@$item_addchh\n";
+                    $admin_info .= "Channel @$item_addchh di-banned.\n";
                 }
                 f("bot_kirim_perintah")("sendMessage",[
                     "chat_id"=>f("get_config")("s4s_channel"),
@@ -186,6 +191,13 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     }
                 }
             }
+        }
+        if(!empty($admin_info)){
+            f("bot_kirim_perintah")("sendMessage",[
+                "chat_id"=>f("get_config")("log_chat_id"),
+                "text"=>$admin_info,
+                // "parse_mode"=>"HTML",
+            ]);
         }
     }
     

@@ -116,6 +116,26 @@
             "parse_mode"=>"HTML",
             "disable_web_page_preview"=>true,
         ]);
+        
+        $inviter = f("data_load")("inviteref/$userid",false);
+        if($inviter){
+            $invitersbp = f("get_usersbp")($inviter);
+            if($invitersbp > 0){
+                f("bot_kirim_perintah")("sendMessage",[
+                    "chat_id"=>$inviter,
+                    "text"=>"Anda berhasil mendapatkan 1 SBP karena telah mengundang pengguna baru $userid",
+                ]);
+                $invitersbp++;
+                f("set_usersbp")($inviter,$invitersbp);
+            }
+            else{
+                f("bot_kirim_perintah")("sendMessage",[
+                    "chat_id"=>$inviter,
+                    "text"=>"Gagal mendapatkan SBP dari pengguna baru $userid karena SBP Anda $invitersbp (minimal 1)",
+                ]);
+            }
+            f("data_delete")("inviteref/$userid",false);
+        }
 
         f("check_sbp_habis")($ch_owner);
 
