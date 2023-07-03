@@ -60,6 +60,8 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         ]);
         if(empty($cnt['ok'])){
             $return .=  "ERROR! jumlah subscriber $chname tidak bisa didapatkan.\n";
+            $admin_info .= "Jumlah subscriber @$chname tidak bisa didapatkan oleh bot";
+            $channels_berubah[]=$chname;
             continue;
         }
         $cnt = $cnt['result'];
@@ -75,6 +77,73 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
     
     $return .=  "\n---channels_berubah--\n";
     $return .= print_r($channels_berubah, true);
+
+    $channeltime = [];
+    foreach($channels_berubah as $item){
+        $channeltime[$item] = f("data_time")("channels/$item");
+    }
+    asort($channeltime);
+    $detik_check_channeluname = f("get_config")("detik_check_channeluname");
+    $return .=  "detik_check_channeluname=$detik_check_channeluname\n";
+    $check_channel_uname = [];
+    foreach($channeltime as $k_ch=>$v_time){
+        if($current_time - $v_time > $detik_check_channeluname){
+            $check_channel_uname[$k_ch] = f("data_load")("channels/$k_ch",["id" => "-0"]);
+            $return .=  "V] $k_ch perlu dicek usernamenya(".$current_time."-".$v_time." = ". ($current_time - $v_time) ." > $detik_check_channeluname)\n";
+        }
+        else{
+            $return .=  "X] $k_ch tidak perlu dicek usernamenya(".$current_time."-".$v_time." = ". ($current_time - $v_time) .")\n";
+        }
+    }
+    $return .=  "\n---check_channel_uname--\n";
+    $return .= print_r($check_channel_uname, true);
+    foreach($check_channel_uname as $k_ch=>$chid){
+        $chatinfo = f("bot_kirim_perintah")("getChat",[
+            "chat_id"=>"@$k_ch",
+        ]);
+        if(!empty($chatinfo['result'])){
+            f("data_save")("channels/$k_ch",$chatinfo['result']);
+        }
+        else{
+            //gagal mendapatkan ID
+            $chatinfo['result']["id"] = "-0";
+        }
+        if($chatinfo['result']["id"] != $chid){
+            $admin_info .= "Channel @$k_ch berubah dari $chid jadi ".$chatinfo['result']["id"]."\nChannel ini dibanned!";
+            file_put_contents("data/banned_channels/$k_ch", "1");
+            $datalist = f("data_list")("channelposts");
+            $chowner = false;
+            foreach($datalist as $item){
+                if(f("str_is_diakhiri")($item, "-$k_ch")){
+                    $chowner = str_replace("-$k_ch","",$item);
+                    break;
+                }
+            }
+            if($chowner){
+                $userchannelpost = f("data_load")("channelposts/$chowner-$k_ch");
+                if(!empty($userchannelpost)){
+                    $deleteMsg = f("bot_kirim_perintah")('deleteMessage',[
+                        'chat_id' => f("get_config")("s4s_channel"),
+                        'message_id' => $userchannelpost,
+                    ]);
+                    if(empty($deleteMsg['ok'])){
+                        f("bot_kirim_perintah")('editMessageText',[
+                            'chat_id' => f("get_config")("s4s_channel"),
+                            'text'=> "This message has been #deleted",
+                            'parse_mode'=>'HTML',
+                            'message_id' => $userchannelpost,
+                        ]);
+                    }
+                    f("data_delete")("channelposts/$chowner-$k_ch");
+                }
+                f("bot_kirim_perintah")("sendMessage",[
+                    'chat_id'=>$chowner,
+                    'text'=>"Channel @$k_ch telah di-banned karena telah berganti username",
+                ]);
+            }
+        }
+    }
+
 
     $return .=  "\n-----\n";
     foreach($users_check as $usr=>$usrchs){

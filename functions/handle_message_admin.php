@@ -14,10 +14,10 @@ function handle_message_admin($botdata){
     }    
     if($is_admin and $text == "/users"){
         $datalist = f("data_list")("users");
-        $send_text = "USERS:\n";
-        foreach($datalist as $item){
-            $send_text .= "/u_$item\n";
-        }
+        // $send_text = "USERS:\n";
+        // foreach($datalist as $item){
+        //     $send_text .= "/u_$item\n";
+        // }
         // f("bot_kirim_perintah")("sendMessage",[
         //     "chat_id"=>$botdata["chat"]["id"],
         //     "text"=>$send_text,
@@ -25,7 +25,7 @@ function handle_message_admin($botdata){
         f("bot_kirim_file")(
             $botdata["chat"]["id"], 
             "users.txt", 
-            print_r($send_text,true), 
+            print_r($datalist,true), 
             "users ".date("Y-m-d-H-i")
         );
         return true;
