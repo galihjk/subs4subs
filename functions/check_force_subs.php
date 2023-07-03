@@ -59,7 +59,7 @@ function check_force_subs($botdata){
         return true;
     }
     
-    $botdata["from"]["id"]["LAST_ACTIVE"] = date("Y-m-d H:i:s");
+    $botdata["from"]["LAST_ACTIVE"] = date("Y-m-d H:i:s");
     f("data_save")("users/".$botdata["from"]["id"],$user);
     return false;
 }
