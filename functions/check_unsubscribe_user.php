@@ -146,28 +146,28 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     $return .=  "Channel $item_addchh BANNED!\n";
                     $outputtext .= "@$item_addchh\n";
                     $admin_info .= "Channel @$item_addchh di-banned.\n";
+                    $userchannelpost = f("data_load")("channelposts/$item_addchh");
+                    if(!empty($userchannelpost)){
+                        $deleteMsg = f("bot_kirim_perintah")('deleteMessage',[
+                            'chat_id' => f("get_config")("s4s_channel"),
+                            'message_id' => $userchannelpost,
+                        ]);
+                        if(empty($deleteMsg['ok'])){
+                            f("bot_kirim_perintah")('editMessageText',[
+                                'chat_id' => f("get_config")("s4s_channel"),
+                                'text'=> "This message has been #deleted",
+                                'parse_mode'=>'HTML',
+                                'message_id' => $userchannelpost,
+                            ]);
+                        }
+                        f("data_delete")("channelposts/$item_addchh");
+                    }
                 }
                 f("bot_kirim_perintah")("sendMessage",[
                     "chat_id"=>f("get_config")("s4s_channel"),
                     "text"=>$outputtext,
                     // "parse_mode"=>"HTML",
                 ]);
-                $userchannelpost = f("data_load")("channelposts/$item_addchh");
-                if(!empty($userchannelpost)){
-                    $deleteMsg = f("bot_kirim_perintah")('deleteMessage',[
-                        'chat_id' => f("get_config")("s4s_channel"),
-                        'message_id' => $userchannelpost,
-                    ]);
-                    if(empty($deleteMsg['ok'])){
-                        f("bot_kirim_perintah")('editMessageText',[
-                            'chat_id' => f("get_config")("s4s_channel"),
-                            'text'=> "This message has been #deleted",
-                            'parse_mode'=>'HTML',
-                            'message_id' => $userchannelpost,
-                        ]);
-                    }
-                    f("data_delete")("channelposts/$item_addchh");
-                }
                 //info ke user
                 $all_users = f("data_list")("users");
                 foreach($all_users as $item){

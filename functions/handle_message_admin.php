@@ -57,7 +57,7 @@ function handle_message_admin($botdata){
         file_put_contents("info_data.txt",print_r($userdata,true));
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/bot".f("get_config")("bot_token")."/sendDocument?caption=user+$finduserid&chat_id=" . $botdata["chat"]["id"]);
+        curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/bot".f("get_config")("bot_token")."/sendDocument?caption=user+$finduserid+".date("Y-m-d-H-i")."&chat_id=" . $botdata["chat"]["id"]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
     
