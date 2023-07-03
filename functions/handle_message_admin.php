@@ -18,10 +18,16 @@ function handle_message_admin($botdata){
         foreach($datalist as $item){
             $send_text .= "/u_$item\n";
         }
-        f("bot_kirim_perintah")("sendMessage",[
-            "chat_id"=>$botdata["chat"]["id"],
-            "text"=>$send_text,
-        ]);
+        // f("bot_kirim_perintah")("sendMessage",[
+        //     "chat_id"=>$botdata["chat"]["id"],
+        //     "text"=>$send_text,
+        // ]);
+        f("bot_kirim_file")(
+            $botdata["chat"]["id"], 
+            "users.txt", 
+            print_r($send_text,true), 
+            "users ".date("Y-m-d-H-i")
+        );
         return true;
     }
     elseif($is_admin and f("str_is_diawali")($text,"/u_")){
@@ -53,30 +59,12 @@ function handle_message_admin($botdata){
         //     "disable_web_page_preview"=>true,
         // ]);
 
-        //============================
-        file_put_contents("info_data.txt",print_r($userdata,true));
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/bot".f("get_config")("bot_token")."/sendDocument?caption=user+$finduserid+".date("Y-m-d-H-i")."&chat_id=" . $botdata["chat"]["id"]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-    
-        // Create CURLFile
-        $finfo = finfo_file(finfo_open(FILEINFO_MIME_TYPE), "info_data.txt");
-        $cFile = new CURLFile("info_data.txt", $finfo);
-    
-        // Add CURLFile to CURL request
-        curl_setopt($ch, CURLOPT_POSTFIELDS, [
-            "document" => $cFile
-        ]);
-    
-        // Call
-        $result = curl_exec($ch);
-    
-        // Show result and close curl
-        // var_dump($result);
-        curl_close($ch);
-        //============================
+        f("bot_kirim_file")(
+            $botdata["chat"]["id"], 
+            "info_data.txt", 
+            print_r($userdata,true), 
+            "user+$finduserid+".date("Y-m-d-H-i")
+        );
 
         return true;
     }
