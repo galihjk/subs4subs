@@ -7,8 +7,8 @@
         $outputtext = "Anda bisa mendapatkan 1 SBP setiap mengajak pengguna baru.\nSyarat:\n";
         $outputtext .= "• Pengguna baru adalah pengguna yang belum pernah melakukan start pada bot @".f("get_config")("botuname")."\n";
         $outputtext .= "• Pengguna baru melakukan start bot pertama kali dari link anda\n";
-        $outputtext .= "• Saat pengguna baru mendapatkan SBP dari hasi join channel untuk pertama kali, Anda harus memiliki minimal 1 SBP\n";
-        $outputtext .= "Berikut ini link Anda untuk mengundang pengguna baru:\n";
+        $outputtext .= "• Saat pengguna baru mendapatkan SBP dari hasil join channel untuk pertama kali, Anda harus memiliki minimal 1 SBP\n";
+        $outputtext .= "• Berikut ini link Anda untuk mengundang pengguna baru:\n";
         $outputtext .= "https://t.me/".f("get_config")("botuname")."/?start=ref_$userid";
         f("bot_kirim_perintah")("sendMessage",[
             "chat_id"=>$chatid,

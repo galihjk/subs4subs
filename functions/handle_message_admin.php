@@ -33,8 +33,13 @@ function handle_message_admin($botdata){
             $user_addch_history = array_keys($user_addch_history);
             $usersubsdata['chll'] = [];
             foreach($user_addch_history as $item){
-                $msgid = f("data_load")("channelposts/$finduserid-$item","-");
-                $usersubsdata['chll'][$item] = f("s4slink")($msgid);
+                $msgid = f("data_load")("channelposts/$finduserid-$item",false);
+                if($msgid){
+                    $usersubsdata['chll'][$item] = f("s4slink")($msgid);
+                }
+                else{
+                    $usersubsdata['chll'][$item] = "-";
+                }
             }
         }
         if(file_exists("data/banned_users/$finduserid")){
@@ -45,6 +50,7 @@ function handle_message_admin($botdata){
         f("bot_kirim_perintah")("sendMessage",[
             "chat_id"=>$botdata["chat"]["id"],
             "text"=>print_r($userdata,true),
+            "disable_web_page_preview"=>true,
         ]);
         return true;
     }
