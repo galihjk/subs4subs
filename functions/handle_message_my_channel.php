@@ -8,7 +8,7 @@
         $output_text = "Channel Anda:\n\n";
         foreach($userchannels as $channel){
             $output_text .= "- $channel ";
-            $msgid = f("data_load")("$userid-$channel");
+            $msgid = f("data_load")("channelposts/$userid-$channel");
             $output_text .= "<a href='".f("s4slink")($msgid)."'>[↗️]</a>\n";
             $output_text .= "/hapus_channel_$channel\n\n";
         }

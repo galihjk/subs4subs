@@ -170,7 +170,7 @@
                 return true;
             }
             f("data_delete")("waiting_confirmation/$requester");
-            f("set_userchll")($requester,$channel_confirmation);
+            // f("set_userchll")($requester,$channel_confirmation); gadipake
             $result = f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>f("get_config")("s4s_channel"),
                 "text"=>"Ayo <a href='t.me/$channel_confirmation'>join ke sini</a> dan dapatkan poinnya!",

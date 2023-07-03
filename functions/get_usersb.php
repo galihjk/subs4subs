@@ -5,7 +5,7 @@ function get_usersb($userid){
         $user = [
             'SBP' => 0,
             'subs' => [],
-            'chll' => [],
+            // 'chll' => [], ga dipake
         ];
         f("data_save")("usersubs/$userid",$user);
     }

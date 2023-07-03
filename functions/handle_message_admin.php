@@ -28,6 +28,19 @@ function handle_message_admin($botdata){
         $finduserid = str_replace("@".f("get_config")("botuname"),"",substr($text,strlen("/u_")));
         $userdata = f("data_load")("users/$finduserid");
         $usersubsdata = f("data_load")("usersubs/$finduserid");
+        $user_addch_history = f("data_load")("user_addch_history/$finduserid");
+        if(!empty($user_addch_history)){
+            $user_addch_history = array_keys($user_addch_history);
+            $usersubsdata['chll'] = [];
+            foreach($user_addch_history as $item){
+                $msgid = f("data_load")("channelposts/$finduserid-$item","-");
+                $usersubsdata['chll'][$item] = f("s4slink")($msgid);
+            }
+        }
+        if(file_exists("data/banned_users/$finduserid")){
+            $usersubsdata['status'] = "BANNED";
+        }
+        
         $userdata = array_merge($userdata,$usersubsdata);
         f("bot_kirim_perintah")("sendMessage",[
             "chat_id"=>$botdata["chat"]["id"],

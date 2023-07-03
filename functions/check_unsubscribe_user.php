@@ -105,7 +105,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     else{
                         f("bot_kirim_perintah")("sendMessage",[
                             'chat_id'=>$usr,
-                            'text'=>"Anda telah unsubscribe @$usrchs, Anda dan channel Anda di-banned.",
+                            'text'=>"Anda telah unsubscribe @$item_usrch, Anda dan channel Anda di-banned.",
                         ]);
                         $ban = true;
                         $result = "UNSUBSCRIBE!!";
@@ -113,7 +113,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     $unsubscribe = true;
                     unset($newusersubs[$k]);
                     $usersbp--;
-                    $admin_info .= "/u_$usr unsubscribe @$usrchs\n";
+                    $admin_info .= "/u_$usr unsubscribe @$item_usrch\n";
                 }
                 else{
                     $result = "subscribed";
