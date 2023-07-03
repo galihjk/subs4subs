@@ -12,7 +12,7 @@
         $outputtext .= "https://t.me/".f("get_config")("botuname")."/?start=ref_$userid";
         f("bot_kirim_perintah")("sendMessage",[
             "chat_id"=>$chatid,
-            "text"=>"",
+            "text"=>$outputtext,
             "disable_web_page_preview"=>true,
         ]);
         return true;
