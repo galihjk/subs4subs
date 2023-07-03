@@ -97,7 +97,8 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
     }
     $return .=  "\n---check_channel_uname--\n";
     $return .= print_r($check_channel_uname, true);
-    foreach($check_channel_uname as $k_ch=>$chid){
+    foreach($check_channel_uname as $k_ch=>$item){
+        $chid = $item["id"] ?? "0";
         $chatinfo = f("bot_kirim_perintah")("getChat",[
             "chat_id"=>"@$k_ch",
         ]);
