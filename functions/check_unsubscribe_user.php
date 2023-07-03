@@ -9,6 +9,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
     else{
         $all_users = [$user];
     }
+    $admin_info = "";
     
     $usertime = [];
     foreach($all_users as $item){
@@ -67,7 +68,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         $cnt = $cnt['result'];
         if($sbcount != $cnt){
             $channels_berubah[]=$chname;
-            $return .=  "$chname berubah dari ".$channels[$item]['cnt']." menjadi $cnt\n";
+            $return .=  "$chname berubah dari ".$sbcount." menjadi $cnt\n";
             f("data_save")("channelsbcount/$chname",$cnt);
         }
         else{
@@ -111,6 +112,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         }
         if($chatinfo['result']["id"] != $chid){
             $admin_info .= "Channel @$k_ch berubah dari $chid jadi ".$chatinfo['result']["id"]."\nChannel ini dibanned!";
+            $return .= "Channel @$k_ch berubah dari $chid jadi ".$chatinfo['result']["id"]."\nChannel ini dibanned!\n";
             file_put_contents("data/banned_channels/$k_ch", "1");
             $datalist = f("data_list")("channelposts");
             $chowner = false;
@@ -154,7 +156,6 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         $newusersubs = $usrchs;
         $unsubscribe = false;
         $ban = false;
-        $admin_info = "";
         foreach($usrchs as $k=>$item_usrch){
             $result = "";
             if(in_array($item_usrch, $channels_berubah)){
