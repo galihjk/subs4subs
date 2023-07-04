@@ -114,6 +114,9 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
             $chatinfo['result']["id"] = "(unknown)";
         }
         if($chatinfo['result']["id"] != $chid){
+            $chatinfo = f("bot_kirim_perintah")("getChat",[
+                "chat_id"=>$chid,
+            ]);
             $username_baru = "unknown";
             if($chatinfo['result']["id"] != "(unknown)" and !empty($chatinfo['result']["username"])){
                 $username_baru = "@".$chatinfo['result']["username"];
