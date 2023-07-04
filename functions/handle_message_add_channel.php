@@ -208,9 +208,13 @@
                 "disable_web_page_preview"=>true,
                 "reply_to_message_id"=>$botdata['message_id'],
             ]);
-            $addch_history = f("data_load")("user_addch_history/$requester",[]);
-            $addch_history[$channel_confirmation] = time();
-            f("data_save")("user_addch_history/$requester",$addch_history);
+            /*
+                OLD
+                $addch_history = f("data_load")("user_addch_history/$requester",[]);
+                $addch_history[$channel_confirmation] = time();
+                f("data_save")("user_addch_history/$requester",$addch_history);
+            */
+                f("data_save")("user_addch_history/$requester-$channel_confirmation",1);
             return true;
         }
         return false;

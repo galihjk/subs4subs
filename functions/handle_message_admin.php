@@ -34,9 +34,14 @@ function handle_message_admin($botdata){
         $finduserid = str_replace("@".f("get_config")("botuname"),"",substr($text,strlen("/u_")));
         $userdata = f("data_load")("users/$finduserid");
         $usersubsdata = f("data_load")("usersubs/$finduserid");
-        $user_addch_history = f("data_load")("user_addch_history/$finduserid");
-        if(!empty($user_addch_history)){
+        
+        /*OLD
+            $user_addch_history = f("data_load")("user_addch_history/$finduserid");
             $user_addch_history = array_keys($user_addch_history);
+        */
+        $user_addch_history = f("get_user_addch_history")($finduserid);
+
+        if(!empty($user_addch_history)){
             $usersubsdata['chll'] = [];
             foreach($user_addch_history as $item){
                 $msgid = f("data_load")("channelposts/$finduserid-$item",false);

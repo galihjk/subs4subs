@@ -1,5 +1,7 @@
 <?php
 function check_unsubscribe_user($user = "{ALL_USERS}"){
+    f("data_save")("job_is_running",1);
+    $microtime_start = microtime(true);
     $current_time = time();
     $return = "";
 
@@ -98,8 +100,9 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
     }
     $return .=  "\n---check_channel_uname--\n";
     $return .= print_r($check_channel_uname, true);
+    $channel_ganti_uname = [];
     foreach($check_channel_uname as $k_ch=>$item){
-        $chid = $item["id"] ?? "0";
+        $chid = $item["id"] ?? "[unknown]";
         $chatinfo = f("bot_kirim_perintah")("getChat",[
             "chat_id"=>"@$k_ch",
         ]);
@@ -108,11 +111,43 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         }
         else{
             //gagal mendapatkan ID
-            $chatinfo['result']["id"] = "-0";
+            $chatinfo['result']["id"] = "(unknown)";
         }
         if($chatinfo['result']["id"] != $chid){
-            $admin_info .= "Channel @$k_ch berubah dari $chid jadi ".$chatinfo['result']["id"]."\nChannel ini dibanned!\n";
-            $return .= "Channel @$k_ch berubah dari $chid jadi ".$chatinfo['result']["id"]."\nChannel ini dibanned!\n";
+            $username_baru = "unknown";
+            if($chatinfo['result']["id"] != "(unknown)" and !empty($chatinfo['result']["username"])){
+                $username_baru = "@".$chatinfo['result']["username"];
+                file_put_contents("data/banned_channels/".$chatinfo['result']["username"], "1");
+                $chowner = false;
+                $datalist = f("data_list")("channelposts");
+                foreach($datalist as $item){
+                    if(f("str_is_diakhiri")($item, "-".$chatinfo['result']["username"])){
+                        $chowner = str_replace("-".$chatinfo['result']["username"],"",$item);
+                        break;
+                    }
+                }
+                if($chowner){
+                    $userchannelpost = f("data_load")("channelposts/$chowner-".$chatinfo['result']["username"]);
+                    if(!empty($userchannelpost)){
+                        $deleteMsg = f("bot_kirim_perintah")('deleteMessage',[
+                            'chat_id' => f("get_config")("s4s_channel"),
+                            'message_id' => $userchannelpost,
+                        ]);
+                        if(empty($deleteMsg['ok'])){
+                            f("bot_kirim_perintah")('editMessageText',[
+                                'chat_id' => f("get_config")("s4s_channel"),
+                                'text'=> "This message has been #deleted",
+                                'parse_mode'=>'HTML',
+                                'message_id' => $userchannelpost,
+                            ]);
+                        }
+                        f("data_delete")("channelposts/$chowner-".$chatinfo['result']["username"]);
+                    }
+                }
+            }
+            $channel_ganti_uname[$k_ch] = $username_baru;
+            $admin_info .= "Channel @$k_ch berubah dari $chid jadi $username_baru ".$chatinfo['result']["id"]."\nChannel ini dibanned!\n";
+            $return .= "Channel @$k_ch berubah dari $chid jadi $username_baru ".$chatinfo['result']["id"]."\nChannel ini dibanned!\n";
             file_put_contents("data/banned_channels/$k_ch", "1");
             $datalist = f("data_list")("channelposts");
             $chowner = false;
@@ -139,9 +174,33 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     }
                     f("data_delete")("channelposts/$chowner-$k_ch");
                 }
+                // tidak perlu, sekalian aja pakai user_addch_history
+                // f("bot_kirim_perintah")("sendMessage",[
+                //     'chat_id'=>$chowner,
+                //     'text'=>"Channel @$k_ch telah di-banned karena telah berganti username",
+                // ]);
+            }
+            
+            $list_user_addch_history = f("data_list")("user_addch_history");
+            $ch_check = "-".$k_ch;
+            $chadmins = [];
+            foreach($list_user_addch_history as $item){
+                if(f("str_is_diakhiri")($item,$ch_check)){
+                    $chadmins[substr($item,0,strlen($item)-strlen($ch_check))] = true;
+                }
+                if(!empty($chatinfo['result']["username"]) 
+                and f("str_is_diakhiri")($item,"-".$chatinfo['result']["username"])){
+                    $chadmins[substr($item,0,strlen($item)-strlen("-".$chatinfo['result']["username"]))] = true;
+                }
+            }
+            $chadmins = array_keys($chadmins); 
+            foreach($chadmins as $item){
+                file_put_contents("data/banned_users/$item", "1");
+                $admin_info .= "User /u_$item dibanned sebagai admin Channel @$k_ch ($username_baru)\n";
+                $return .= "User $item dibanned sebagai admin Channel @$k_ch\n ($username_baru)";
                 f("bot_kirim_perintah")("sendMessage",[
-                    'chat_id'=>$chowner,
-                    'text'=>"Channel @$k_ch telah di-banned karena telah berganti username",
+                    'chat_id'=>$item,
+                    'text'=>"Anda dan Channel @$k_ch ($username_baru) telah di-banned karena channel tersebut telah berganti username",
                 ]);
             }
         }
@@ -167,10 +226,18 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                 or in_array($getChatMember["result"]["status"],["restricted","left","kicked"])
                 ){
                     if(file_exists("data/banned_channels/$item_usrch")){
-                        f("bot_kirim_perintah")("sendMessage",[
-                            'chat_id'=>$usr,
-                            'text'=>"Anda berhasil unsubscribe banned channel @$usrchs",
-                        ]);
+                        if(!empty($channel_ganti_uname[$item_usrch])){
+                            f("bot_kirim_perintah")("sendMessage",[
+                                'chat_id'=>$usr,
+                                'text'=>"Channel @$item_usrch (".$channel_ganti_uname[$item_usrch].") telah dibanned. Silakan lakukan unsubscribe.",
+                            ]);
+                        }
+                        else{
+                            f("bot_kirim_perintah")("sendMessage",[
+                                'chat_id'=>$usr,
+                                'text'=>"Anda berhasil unsubscribe banned channel @$item_usrch",
+                            ]);
+                        }
                         $result = "unsubscribe banned channel";
                     }
                     else{
@@ -208,8 +275,12 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
             $admin_info .= "/u_$usr di-banned.\n";
             file_put_contents("data/banned_users/$usr", "1");
             $return .=  "User $usr BANNED!\n";
-            $addch_history = f("data_load")("user_addch_history/$usr",[]);
-            $addch_history = array_keys($addch_history);
+            /*OLD
+                $addch_history = f("data_load")("user_addch_history/$usr",[]);
+                $addch_history = array_keys($addch_history);
+            */
+            $addch_history = f("get_user_addch_history")($usr);
+            
             if(!empty($addch_history)){
                 $outputtext = "WARNING!\nPengguna $usr telah melakukan unsubscribe, ia dan channelnya di-banned.\nSilakan unsubscribe channel berikut:\n";
                 foreach($addch_history as $item_addchh){
@@ -301,6 +372,9 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
         ]);
     }
     */
+    f("data_delete")("job_is_running");
+    $exectime = microtime(true) - $microtime_start;
+    $return .= "\nexectime=$exectime\n";
 
     return $return;
 }

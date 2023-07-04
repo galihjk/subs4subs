@@ -1,6 +1,9 @@
 <?php
 function handle_message($botdata){
     $chat_id = $botdata["chat"]["id"];
+
+    if(f("data_load")("job_is_running",false)) sleep(1);
+    
     f("handle_botdata_functions")($botdata,[
         "check_banned_user",
         "check_force_subs",
