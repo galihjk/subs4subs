@@ -203,7 +203,7 @@
             }
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$chatid,
-                "text"=>"<a href='$linktopost'>👍</a>",
+                "text"=>"👍<a href='$linktopost'>[↗️]</a>",
                 "parse_mode"=>"HTML",
                 "disable_web_page_preview"=>true,
                 "reply_to_message_id"=>$botdata['message_id'],

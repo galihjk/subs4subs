@@ -11,8 +11,35 @@ function handle_message_admin($botdata){
     }
     else{
         $is_admin = false;
-    }    
-    if($is_admin and $text == "/users"){
+    }
+    
+    if($is_admin and $text == "/admin"){
+        $outputtext = "/users \n";
+        $outputtext .= "/u_{id} \n";
+        $outputtext .= "/unban_user_{id} \n";
+        $outputtext .= "/unban_channel_{channel} \n";
+        f("bot_kirim_perintah")("sendMessage",[
+            "chat_id"=>$botdata["chat"]["id"],
+            "text"=>$outputtext,
+        ]);
+    }
+    elseif($is_admin and f("str_is_diawali")($text,"/unban_user_")){
+        $unbanuser = str_replace("@".f("get_config")("botuname"),"",str_replace("/unban_user_","",$text));
+        unlink("data/banned_users/$unbanuser");
+        f("bot_kirim_perintah")("sendMessage",[
+            "chat_id"=>$botdata["chat"]["id"],
+            "text"=>"👍",
+        ]);
+    }
+    elseif($is_admin and f("str_is_diawali")($text,"/unban_channel_")){
+        $unban_channel = str_replace("@".f("get_config")("botuname"),"",str_replace("/unban_channel_","",$text));
+        unlink("data/banned_channels/$unban_channel");
+        f("bot_kirim_perintah")("sendMessage",[
+            "chat_id"=>$botdata["chat"]["id"],
+            "text"=>"👍",
+        ]);
+    }
+    elseif($is_admin and $text == "/users"){
         $datalist = f("data_list")("users");
         // $send_text = "USERS:\n";
         // foreach($datalist as $item){
