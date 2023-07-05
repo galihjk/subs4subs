@@ -351,13 +351,13 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                 }
             }
         }
-        if(!empty($admin_info)){
-            f("bot_kirim_perintah")("sendMessage",[
-                "chat_id"=>f("get_config")("log_chat_id"),
-                "text"=>$admin_info,
-                // "parse_mode"=>"HTML",
-            ]);
-        }
+    }
+    if(!empty($admin_info)){
+        f("bot_kirim_perintah")("sendMessage",[
+            "chat_id"=>f("get_config")("log_chat_id"),
+            "text"=>$admin_info,
+            // "parse_mode"=>"HTML",
+        ]);
     }
     
     /*
