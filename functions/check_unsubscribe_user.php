@@ -98,8 +98,8 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
             $return .=  "X] $k_ch tidak perlu dicek usernamenya(".$current_time."-".$v_time." = ". ($current_time - $v_time) .")\n";
         }
     }
-    $return .=  "\n---check_channel_uname--\n";
-    $return .= print_r($check_channel_uname, true);
+    // $return .=  "\n---check_channel_uname--\n";
+    // $return .= print_r($check_channel_uname, true);
     $channel_ganti_uname = [];
     foreach($check_channel_uname as $k_ch=>$item){
         $chid = $item["id"] ?? "[unknown]";
@@ -334,6 +334,8 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                         }
                     }
                     if(!empty($user_ch_should_unsubs)){
+                        $return .= "\n==user_ch_should_unsubs==\n";
+                        $return .= print_r($user_ch_should_unsubs, true)."\n";
                         $outputtext = "Silakan unsubscribe channel berikut karena telah dibanned:\n";
                         foreach($user_ch_should_unsubs as $item_uns){
                             $channelid = $channelids[$item_uns];
@@ -343,7 +345,7 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                         f("bot_kirim_perintah")("sendMessage",[
                             "chat_id"=>$item,
                             "text"=>$outputtext,
-                            // "parse_mode"=>"HTML",
+                            "parse_mode"=>"HTML",
                         ]);
                     }
                 }
