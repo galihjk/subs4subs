@@ -328,8 +328,8 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                 foreach($all_users as $item){
                     $usersubs = f("get_usersubs")($item);
                     $user_ch_should_unsubs = [];
-                    foreach($addch_history as $item_addchh){
-                        if(in_array($item_addchh,$usersubs)){
+                    foreach($addch_history as $item_addch){
+                        if(in_array($item_addch,$usersubs)){
                             $user_ch_should_unsubs[] = $item_addch;
                         }
                     }
