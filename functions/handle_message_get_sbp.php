@@ -46,13 +46,30 @@
         if(empty($getChatMember["result"]["status"])){
             f("bot_kirim_perintah")("sendMessage",[
                 "chat_id"=>$chatid,
-                "text"=>"Gagal: Bot sudah bukan admin di channel @$channel",
+                "text"=>"Gagal: Bot sudah bukan admin di channel @$channel\nSilakan cek lagi channel ".f("get_config")("s4s_channel"),
                 "parse_mode"=>"HTML",
                 "disable_web_page_preview"=>true,
                 'reply_markup' => [
                     'force_reply'=>false,
                 ],
             ]);
+            f("bot_kirim_perintah")("sendMessage",[
+                "chat_id"=>f("get_config")("log_chat_id"),
+                "text"=>"Bot sudah bukan admin di channel @$channel\nPostingan channel tersebut akan dihapus oleh sistem, lalu nanti bisa kena banned saat dicek oleh job.\n$ch_owner-$channel $ch_msgid",
+            ]);
+            $deleteMsg = f("bot_kirim_perintah")('deleteMessage',[
+                'chat_id' => f("get_config")("s4s_channel"),
+                'message_id' => $ch_msgid,
+            ]);
+            if(empty($deleteMsg['ok'])){
+                f("bot_kirim_perintah")('editMessageText',[
+                    'chat_id' => f("get_config")("s4s_channel"),
+                    'text'=> "This message has been #deleted",
+                    'parse_mode'=>'HTML',
+                    'message_id' => $ch_msgid,
+                ]);
+            }
+            f("data_delete")("channelposts/$ch_owner-$channel");
             return true;
         }
         if(in_array($getChatMember["result"]["status"],["creator","owner","administrator"])){

@@ -285,11 +285,20 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
             $addch_history = f("get_user_addch_history")($usr);
             
             if(!empty($addch_history)){
-                $outputtext = "WARNING!\nPengguna $usr telah melakukan unsubscribe, ia dan channelnya di-banned.\nSilakan unsubscribe channel berikut:\n";
+                $outputtext = "WARNING!\nPengguna $usr telah melakukan unsubscribe, silakan unsubscribe juga channelnya:\n";
+                $channelids = [];
                 foreach($addch_history as $item_addchh){
+                    $chdata = f("data_load")("channels/$item_addchh");
+                    if(!empty($chdata["id"])){
+                        $channelid = $chdata["id"];
+                    }
+                    else{
+                        $channelid = "";
+                    }
+                    $channelids[$item_addchh] = $channelid;
                     file_put_contents("data/banned_channels/$item_addchh", "1");
                     $return .=  "Channel $item_addchh BANNED!\n";
-                    $outputtext .= "@$item_addchh\n";
+                    $outputtext .= "@$item_addchh ($channelid)\n";
                     $admin_info .= "Channel @$item_addchh di-banned.\n";
                     $userchannelpost = f("data_load")("channelposts/$usr-$item_addchh");
                     if(!empty($userchannelpost)){
@@ -308,10 +317,11 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                         f("data_delete")("channelposts/$usr-$item_addchh");
                     }
                 }
+                $outputtext .= "\n<i>*the user and his channels have been banned</i>";
                 f("bot_kirim_perintah")("sendMessage",[
                     "chat_id"=>f("get_config")("s4s_channel"),
                     "text"=>$outputtext,
-                    // "parse_mode"=>"HTML",
+                    "parse_mode"=>"HTML",
                 ]);
                 //info ke user
                 $all_users = f("data_list")("users");
@@ -326,7 +336,9 @@ function check_unsubscribe_user($user = "{ALL_USERS}"){
                     if(!empty($user_ch_should_unsubs)){
                         $outputtext = "Silakan unsubscribe channel berikut karena telah dibanned:\n";
                         foreach($user_ch_should_unsubs as $item_uns){
-                            $outputtext .= "@$item_uns\n";
+                            $channelid = $channelids[$item_uns];
+                            $linkchannel = "t.me/c/".str_replace("-100","",$channelid)."/1";
+                            $outputtext .= "@$item_uns ($channelid) <a href='$linkchannel'>[↗️]</a>\n";
                         }
                         f("bot_kirim_perintah")("sendMessage",[
                             "chat_id"=>$item,
